@@ -1,27 +1,62 @@
-import React from "react";
-import Productcard from './components/Productcard';
-import { useState, useEffect } from 'react';
+import "./styles.css";
+import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
+export default function App() {
+  const [userList, setUserList] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-function App() {
+  const showUsers = () => {
+    setIsLoading(true);
+    setTimeout(() => {
+      axios
+        .get(
+          "https://api.escuelajs.co/api/v1/products"
+        )
+        .then((res) => {
+          setUserList(res.data);
+          setIsLoading(false);
+        });
+    }, 3000);
+  };
 
-  const [products, setProducts] = useState([]);
   useEffect(() => {
-    fetch('https://api.escuelajs.co/api/v1/products')
-      .then((response) => response.json())
-      .then((data) => {
-        setProducts(data);
-        console.log(data); 
-      })
+    setIsLoading(true);
+    showUsers();
   }, []);
 
-  
   return (
-    <>
-      <Productcard products={products} />
-    </>
+    <div className="App">
+      
+      {isLoading === false &&
+        userList.map((user) => (
+          <div className="card">
+            <img
+              src={user.images}
+            
+            />
+            <h1>{user.title}</h1>
+            <h2>{user.description || <Skeleton baseColor="gray" />}</h2>
+            <h3>{user.price || <Skeleton />} $</h3>
+          </div>
+        ))}
+      {isLoading === true && (
+        <div className="fleex">
+          <div className="card">
+            <h1>
+              <Skeleton />
+            </h1>
+          </div>
+          <div className="card">
+            <h1>
+              <Skeleton  baseColor="gray" height={"80px"}/>
+            </h1>
+          </div>
+        
+        </div>
+      )}
+    </div>
   );
+  
 }
-
-export default App;
-
