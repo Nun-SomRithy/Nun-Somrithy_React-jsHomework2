@@ -1,14 +1,14 @@
 import "./styles.css";
-import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import { useEffect, useState } from "react";
 import axios from "axios";
-
+import Skeleton from "./component/Skeleton";
+import 'bootstrap/dist/css/bootstrap.min.css';
+import CardProduct from "./component/CardProduct";
 export default function App() {
   const [userList, setUserList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const showUsers = () => {
-    setIsLoading(true);
     setTimeout(() => {
       axios
         .get(
@@ -18,7 +18,7 @@ export default function App() {
           setUserList(res.data);
           setIsLoading(false);
         });
-    }, 3000);
+    }, []);
   };
 
   useEffect(() => {
@@ -27,36 +27,13 @@ export default function App() {
   }, []);
 
   return (
-    <div className="App">
-      
-      {isLoading === false &&
-        userList.map((user) => (
-          <div className="card">
-            <img
-              src={user.images}
-            
-            />
-            <h1>{user.title}</h1>
-            <h2>{user.description || <Skeleton baseColor="gray" />}</h2>
-            <h3>{user.price || <Skeleton />} $</h3>
-          </div>
+    <div className="container">
+      <div className="row">
+        {isLoading ? <Skeleton /> : userList.map((user, index) => (
+          <CardProduct index={index} description={user.description} title={user.title} img={user.images[0]} />
         ))}
-      {isLoading === true && (
-        <div className="fleex">
-          <div className="card">
-            <h1>
-              <Skeleton />
-            </h1>
-          </div>
-          <div className="card">
-            <h1>
-              <Skeleton  baseColor="gray" height={"80px"}/>
-            </h1>
-          </div>
-        
-        </div>
-      )}
+      </div>
     </div>
   );
-  
+
 }
